@@ -173,7 +173,7 @@ function answerQuestion(planetName, userText) {
   return out;
 }
 
-function giveFeedback(planetName, score) {
+function updatePlanetFeedback(planetName, score) {
   if (!(planetName in kideState.learn)) {
     return;
   }
@@ -254,9 +254,10 @@ function sendQuestion() {
   renderHistory();
 }
 
-function giveFeedback(score) {
+// KORJATTU: Palautteen antaminen - ERINIMI FUNKTIOLLE
+function handleFeedback(score) {
   if (kideState.selectedPlanet) {
-    giveFeedback(kideState.selectedPlanet, score);
+    updatePlanetFeedback(kideState.selectedPlanet, score);
     renderHistory();
     updateStats();
     
@@ -297,7 +298,7 @@ function renderHistory() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// HAKUTOIMINNALLISUUS
+// ALUSTUS
 // ═══════════════════════════════════════════════════════════
 
 document.addEventListener("DOMContentLoaded", () => {
