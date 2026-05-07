@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIDE v9 - Planeettajärjestelmä</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #b19cd9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a0a2e 100%);
+            border-bottom: 2px solid #7c3aed;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #c084fc;
+            text-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #a78bfa;
+            font-size: 0.9em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background-color: #1a1a2e;
+            border: 1px solid #7c3aed;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
+        }
+
+        .panel h2 {
+            color: #c084fc;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #7c3aed;
+            padding-bottom: 10px;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            color: #a78bfa;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            background-color: #0f0f1e;
+            border: 1px solid #7c3aed;
+            color: #b19cd9;
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #c084fc;
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.4);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background-color: #7c3aed;
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #a78bfa;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .planets-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .planet-btn {
+            background-color: #0f0f1e;
+            border: 1px solid #7c3aed;
+            color: #b19cd9;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85em;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        .planet-btn:hover {
+            background-color: #2d1b4e;
+            border-color: #c084fc;
+            color: #c084fc;
+        }
+
+        .planet-btn.active {
+            background-color: #7c3aed;
+            color: #000;
+            border-color: #a78bfa;
+        }
+
+        .output-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .answer-box {
+            background-color: #0f0f1e;
+            border-left: 3px solid #7c3aed;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .answer-box.new {
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .feedback-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .feedback-btn {
+            padding: 8px 15px;
+            font-size: 0.85em;
+            flex: 1;
+        }
+
+        .history-area {
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid #7c3aed;
+            padding-top: 15px;
+        }
+
+        .history-item {
+            background-color: #0f0f1e;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 2px solid #7c3aed;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+
+        .history-item .planet-name {
+            color: #c084fc;
+            font-weight: 600;
+        }
+
+        .history-item .feedback-score {
+            color: #a78bfa;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .learning-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background-color: #0f0f1e;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #7c3aed;
+        }
+
+        .stat-item .label {
+            color: #a78bfa;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+
+        .stat-item .value {
+            color: #c084fc;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            background-color: #0f0f1e;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #7c3aed 0%, #c084fc 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f0f1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a78bfa;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .planets-list {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .help-text {
+            background-color: #0f0f1e;
+            border: 1px solid #7c3aed;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #a78bfa;
+            margin-top: 15px;
+        }
+
+        .help-text strong {
+            color: #c084fc;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚛ KIDE v9</h1>
+        <p>Planeettajärjestelmän älykäs vastausjärjestelmä</p>
+    </header>
+
+    <div class="container">
+        <!-- Vasemman puolen kontrollipaneeli -->
+        <div class="panel control-panel">
+            <h2>🌍 Planeetan valinta</h2>
+            
+            <div class="input-group">
+                <label for="planetSearch">🔍 Etsi planeettaa:</label>
+                <input type="text" id="planetSearch" placeholder="Kirjoita planeetan nimi...">
+            </div>
+
+            <div class="planets-list" id="planetsList"></div>
+
+            <div class="input-group">
+                <label for="userInput">📝 Kirjoita kysymys tai teksti:</label>
+                <textarea id="userInput" placeholder="Mitä haluat tietää?"></textarea>
+            </div>
+
+            <button onclick="sendQuestion()">🚀 Lähetä</button>
+
+            <div class="learning-stats">
+                <div class="stat-item">
+                    <div class="label">Käytettyjä</div>
+                    <div class="value" id="usedCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="label">Kyselyitä</div>
+                    <div class="value" id="queryCount">0</div>
+                </div>
+            </div>
+
+            <div class="help-text">
+                <strong>💡 Ohje:</strong> Valitse planeetta, kirjoita teksti ja saat vastauksen planeetan tyylillä!
+            </div>
+        </div>
+
+        <!-- Oikean puolen vastausjärjestelmä -->
+        <div class="panel output-area">
+            <h2>💬 Vastaus & Oppiminen</h2>
+            
+            <div class="answer-box" id="answerBox">
+                <span style="color: #a78bfa; font-size: 0.9em;">Valitse planeetta ja lähetä kysymys...</span>
+            </div>
+
+            <div id="feedbackGroup" style="display: none;">
+                <label style="color: #a78bfa; text-align: center; margin-bottom: 10px;">Miten hyvin vastaus oli?</label>
+                <div class="feedback-group">
+                    <button class="feedback-btn" onclick="giveFeedback(-1)">❌ Huono</button>
+                    <button class="feedback-btn" onclick="giveFeedback(0)">😐 Ok</button>
+                    <button class="feedback-btn" onclick="giveFeedback(1)">✅ Hyvä</button>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 20px;">📜 Historia</h2>
+            <div class="history-area" id="historyArea"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
